@@ -14,7 +14,7 @@ class Application
 
         PrintCommandLineArgumentsIfNeeded(args);
 
-        Config config = GetConfig();
+        Config config = Config.GetConfigFile();
 
         config.filePath = args[0];
         string[] lines = ReadLines(config.filePath);
@@ -35,7 +35,7 @@ class Application
     {
         var executableName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
-        if (args.Length == 0)
+        if (args.Length != 1 && args.Length != 3)
         {
             Console.WriteLine($"{executableName} <bdf-font-file> [width-override] [height-override]");
             Console.WriteLine("Example: " + executableName + " font.bdf 8 8");
@@ -43,15 +43,13 @@ class Application
             Console.WriteLine(" - the font atlas in png format");
             Console.WriteLine(" - the tile data in binary format");
             Console.WriteLine("\nOnly fixed-width fonts are supported.");
-            Console.WriteLine("The font atlas will be 16x16 characters.");
-            Console.WriteLine("Only up to 256 characters will be processed.");
             Environment.Exit(0);
         }
     }
 
     static string[] ReadLines(string filename)
     {
-        string[] lines;
+        string[] lines = null;
 
         try
         {
@@ -59,29 +57,10 @@ class Application
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error reading file {filename}: {ex.Message}");
-            return null;
+            Console.WriteLine($"Error reading file {filename}:\n{ex.Message}");
+            Environment.Exit(1);
         }
 
         return lines;
-    }
-
-    public static Config GetConfig()
-    {
-        Config config = new Config();
-        if (System.IO.File.Exists("config.json"))
-        {
-            try
-            {
-                config = JsonSerializer.Deserialize<Config>(System.IO.File.ReadAllText("config.json"));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error reading config.json: {ex.Message}");
-                return null;
-            }
-        }
-
-        return config;
     }
 }

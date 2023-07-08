@@ -21,7 +21,10 @@ public class BDFConverter
         this.characterWidth = config.characterWidth;
         this.characterHeight = config.characterHeight;
 
-        Console.WriteLine($"Overriding character size to {characterWidth}x{characterHeight}.");
+        if (characterWidth > 0 && characterHeight > 0)
+        {
+            Console.WriteLine($"Overriding character size to {characterWidth}x{characterHeight}.");
+        }
     }
 
     public void ProcessLines(in string[] lines, in string path)
@@ -70,7 +73,7 @@ public class BDFConverter
 
         if (bitmap != null && tileData.Count > 0)
         {
-            Console.WriteLine($"Processed {characterIndex} characters.");
+            Console.WriteLine($"Processed {characterIndex} characters. (Set in config.json)");
             string outputFilename = Path.ChangeExtension(path, ".png");
             Console.WriteLine($"Writing file {outputFilename}");
             bitmap.Save(outputFilename, ImageFormat.Png);
@@ -81,9 +84,7 @@ public class BDFConverter
 
             if (!File.Exists("config.json"))
             {
-                string jsonString = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-                Console.WriteLine($"Writing file config.json");
-                File.WriteAllText("config.json", jsonString);
+                Config.WriteConfigFile(config);
             }
         }
         else
@@ -111,21 +112,19 @@ public class BDFConverter
     {
         if (bitmap == null)
         {
-            Console.WriteLine($"maxcharacters = {config.maxCharacters}");
-            int dimension = (int)Math.Ceiling(Math.Sqrt(config.maxCharacters));
-            Console.WriteLine($"dimension = {dimension}");
-            if (dimension < 1)
+            config.bitmapCharacterDimension = (int)Math.Ceiling(Math.Sqrt(config.maxCharacters));
+            if (config.bitmapCharacterDimension < 1)
             {
                 Console.WriteLine($"Error: Invalid maxCharacters value {config.maxCharacters}");
                 Environment.Exit(0);
             }
-            bitmap = new Bitmap(width * dimension, height * dimension, PixelFormat.Format32bppRgb);
+            bitmap = new Bitmap(width * config.bitmapCharacterDimension, height * config.bitmapCharacterDimension, PixelFormat.Format32bppRgb);
             FillBitmapToBackgroundColor();
             Console.WriteLine($"Bitmap size: {bitmap.Width}x{bitmap.Height}");
         }
 
-        byte x = (byte)(((characterIndex) % 16) * width);
-        byte y = (byte)(((characterIndex) / 16) * height);
+        byte x = (byte)(((characterIndex) % config.bitmapCharacterDimension) * width);
+        byte y = (byte)(((characterIndex) / config.bitmapCharacterDimension) * height);
 
         int maxLines = Math.Min(bitmapLines.Count, height);
         int maxColumns = Math.Min(width, 8);
