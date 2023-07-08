@@ -1,0 +1,6 @@
+﻿.vscode
+bin
+obj
+*.bdf
+*.png
+*.tiledata
