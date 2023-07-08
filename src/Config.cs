@@ -4,6 +4,7 @@ using System.Text.Json;
 public class Config
 {
     public string WhatIsThisFile { get; set; }
+    public int startCharacterIndex { get; set; }
     public UInt16 maxCharacters { get; set; }
 
     public byte foregroundColorIndex { get; set; }
@@ -23,6 +24,7 @@ public class Config
         WhatIsThisFile = "BDFConverter config file";
         characterWidth = 0;
         characterHeight = 0;
+        startCharacterIndex = 0;
         maxCharacters = 256;
 
         foregroundColorIndex = 35; // '#'

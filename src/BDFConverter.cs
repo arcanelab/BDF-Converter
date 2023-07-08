@@ -31,10 +31,11 @@ public class BDFConverter
     {
         bool readBitmapData = false;
         int i = 0;
+        int numberOfProcessedLines = 0;
         List<string> bitmapLines = new List<string>();
         foreach (string line in lines)
         {
-            if (i < 50 && (characterWidth == 0 | characterHeight == 0)) // check only the top 50 lines for FONTBOUNDINGBOX
+            if (i++ < 50 && (characterWidth == 0 | characterHeight == 0)) // check only the top 50 lines for FONTBOUNDINGBOX
             {
                 if (CheckForBoundingBox(line)) continue;
             }
@@ -55,7 +56,12 @@ public class BDFConverter
             if (line.Trim() == "ENDCHAR")
             {
                 readBitmapData = false;
-                ProcessBitmapData(bitmapLines, characterWidth, characterHeight);
+                numberOfProcessedLines++;
+
+                if (numberOfProcessedLines > config.startCharacterIndex)
+                {
+                    ProcessBitmapData(bitmapLines, characterWidth, characterHeight);
+                }
                 bitmapLines.Clear();
                 continue;
             }
@@ -73,6 +79,7 @@ public class BDFConverter
 
         if (bitmap != null && tileData.Count > 0)
         {
+            Console.WriteLine($"Start character index: {config.startCharacterIndex} (Set in config.json)");
             Console.WriteLine($"Processed {characterIndex} characters. (Set in config.json)");
             string outputFilename = Path.ChangeExtension(path, ".png");
             Console.WriteLine($"Writing file {outputFilename}");
@@ -120,7 +127,7 @@ public class BDFConverter
             }
             bitmap = new Bitmap(width * config.bitmapCharacterDimension, height * config.bitmapCharacterDimension, PixelFormat.Format32bppRgb);
             FillBitmapToBackgroundColor();
-            Console.WriteLine($"Bitmap size: {bitmap.Width}x{bitmap.Height}");
+            Console.WriteLine($"Atlas bitmap size: {bitmap.Width}x{bitmap.Height} ({config.bitmapCharacterDimension}x{config.bitmapCharacterDimension} characters)");
         }
 
         byte x = (byte)(((characterIndex) % config.bitmapCharacterDimension) * width);
