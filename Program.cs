@@ -1,5 +1,7 @@
 ﻿#pragma warning disable CA1416
 
+using System.Text.Json;
+
 class Application
 {
     static void Main(string[] args)
@@ -10,29 +12,26 @@ class Application
             return;
         }
 
-        PrintCommandLineArguments(args);
+        PrintCommandLineArgumentsIfNeeded(args);
 
-        string filename = args[0];
-        string[] lines = ReadLines(filename);
+        Config config = GetConfig();
+
+        config.filePath = args[0];
+        string[] lines = ReadLines(config.filePath);
 
         BDFConverter converter;
 
         if (args.Length == 3)
         {
-            byte width = byte.Parse(args[1]);
-            byte height = byte.Parse(args[2]);
-
-            converter = new BDFConverter(width, height);
-        }
-        else
-        {
-            converter = new BDFConverter();
+            config.characterWidth = byte.Parse(args[1]);
+            config.characterHeight = byte.Parse(args[2]);
         }
 
-        converter.ProcessLines(lines, filename);
+        converter = new BDFConverter(config);
+        converter.ProcessLines(lines, config.filePath);
     }
 
-    static void PrintCommandLineArguments(string[] args)
+    static void PrintCommandLineArgumentsIfNeeded(string[] args)
     {
         var executableName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
@@ -65,5 +64,24 @@ class Application
         }
 
         return lines;
+    }
+
+    public static Config GetConfig()
+    {
+        Config config = new Config();
+        if (System.IO.File.Exists("config.json"))
+        {
+            try
+            {
+                config = JsonSerializer.Deserialize<Config>(System.IO.File.ReadAllText("config.json"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading config.json: {ex.Message}");
+                return null;
+            }
+        }
+
+        return config;
     }
 }
