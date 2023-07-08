@@ -1,7 +1,7 @@
 [Serializable]
 public class Config
 {
-    public string whatIsThisFile { get; set; }
+    public string WhatIsThisFile { get; set; }
     public byte characterWidth { get; set; }
     public byte characterHeight { get; set; }
     public UInt16 maxCharacters { get; set; }
@@ -16,7 +16,7 @@ public class Config
 
     public Config()
     {
-        whatIsThisFile = "BDFConverter config file";
+        WhatIsThisFile = "BDFConverter config file";
         characterWidth = 0;
         characterHeight = 0;
         maxCharacters = 256;
@@ -30,8 +30,8 @@ public class Config
         bitmapForegroundColor.SetValue("200", 2);
 
         bitmapBackgroundColor = new string[3];
-        bitmapBackgroundColor.SetValue("0", 0);
-        bitmapBackgroundColor.SetValue("0", 1);
-        bitmapBackgroundColor.SetValue("0", 2);
+        bitmapBackgroundColor.SetValue("38", 0);
+        bitmapBackgroundColor.SetValue("38", 1);
+        bitmapBackgroundColor.SetValue("38", 2);
     }
 }
