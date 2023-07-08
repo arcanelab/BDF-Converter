@@ -113,8 +113,7 @@ public class BDFConverter
             int number = int.Parse(line, System.Globalization.NumberStyles.HexNumber);
             for (int j = 0; j < maxColumns; j++)
             {
-                int mask = 1 << (maxColumns - 1 - j);
-                if ((number & (mask)) != 0)
+                if (((number << j) & 0x100) != 0) // check 9th bit from the right
                 {
                     try
                     {
@@ -138,12 +137,6 @@ public class BDFConverter
                     catch (Exception e)
                     {
                         Console.WriteLine($"\nError at {x + j},{y + i}");
-                        // Console.WriteLine($"bitmapLines.Count = {bitmapLines.Count}");
-                        // Console.WriteLine($"maxLines = {maxLines}");
-                        // Console.WriteLine($"width = {width}, height = {height}");
-                        // Console.WriteLine($"bitmap.Width = {bitmap.Width}, bitmap.Height = {bitmap.Height}");
-                        // Console.WriteLine($"x = {x}, y = {y}, i = {i}, j = {j}");
-                        // Console.WriteLine($"characterIndex = {characterIndex}\n");
                         Console.WriteLine(e.Message);
                         continue;
                     }
