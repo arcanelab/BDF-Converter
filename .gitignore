@@ -4,3 +4,4 @@ obj
 *.bdf
 *.png
 *.tiledata
+config.json
