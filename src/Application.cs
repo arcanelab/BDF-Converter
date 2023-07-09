@@ -1,7 +1,5 @@
 ﻿#pragma warning disable CA1416
 
-using System.Text.Json;
-
 class Application
 {
     static void Main(string[] args)
