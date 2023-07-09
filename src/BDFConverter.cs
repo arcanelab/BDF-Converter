@@ -2,8 +2,6 @@
 
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 public class BDFConverter
@@ -130,8 +128,8 @@ public class BDFConverter
             Console.WriteLine($"Atlas bitmap size: {bitmap.Width}x{bitmap.Height} ({config.bitmapCharacterDimension}x{config.bitmapCharacterDimension} characters)");
         }
 
-        byte x = (byte)(((characterIndex) % config.bitmapCharacterDimension) * width);
-        byte y = (byte)(((characterIndex) / config.bitmapCharacterDimension) * height);
+        UInt16 x = (UInt16)(((characterIndex) % config.bitmapCharacterDimension) * width);
+        UInt16 y = (UInt16)(((characterIndex) / config.bitmapCharacterDimension) * height);
 
         int maxLines = Math.Min(bitmapLines.Count, height);
         int maxColumns = Math.Min(width, 8);

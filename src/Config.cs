@@ -4,7 +4,7 @@ using System.Text.Json;
 public class Config
 {
     public string WhatIsThisFile { get; set; }
-    public int startCharacterIndex { get; set; }
+    public UInt16 startCharacterIndex { get; set; }
     public UInt16 maxCharacters { get; set; }
 
     public byte foregroundColorIndex { get; set; }
