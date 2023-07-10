@@ -20,9 +20,7 @@ public class BDFConverter
         this.characterHeight = config.characterHeight;
 
         if (characterWidth > 0 && characterHeight > 0)
-        {
             Console.WriteLine($"Overriding character size to {characterWidth}x{characterHeight}.");
-        }
     }
 
     public void ProcessLines(in string[] lines, in string path)
@@ -35,7 +33,8 @@ public class BDFConverter
         {
             if (i++ < 50 && (characterWidth == 0 | characterHeight == 0)) // check only the top 50 lines for FONTBOUNDINGBOX
             {
-                if (CheckForBoundingBox(line)) continue;
+                if (CheckForBoundingBox(line))
+                    continue;
             }
             else if (i == 50)
             {
@@ -65,14 +64,10 @@ public class BDFConverter
             }
 
             if (readBitmapData)
-            {
                 bitmapLines.Add(line.Trim());
-            }
 
             if (characterIndex > config.maxCharacters - 1)
-            {
                 break;
-            }
         }
 
         if (bitmap != null && tileData.Count > 0)
@@ -88,9 +83,7 @@ public class BDFConverter
             File.WriteAllBytes(tileDataFilename, tileData.ToArray());
 
             if (!File.Exists("config.json"))
-            {
                 Config.WriteConfigFile(config);
-            }
         }
         else
         {
@@ -141,13 +134,9 @@ public class BDFConverter
             for (int j = 0; j < maxColumns; j++)
             {
                 if (((number << (j + 1)) & 0x100) != 0) // check 9th bit from the right
-                {
                     StoreColor(config.bitmapForegroundColor, config.foregroundColorIndex, x + j, y + i, ref tileData);
-                }
                 else
-                {
                     StoreColor(config.bitmapBackgroundColor, config.backgroundColorIndex, x + j, y + i, ref tileData);
-                }
             }
         }
         characterIndex++;
@@ -156,12 +145,8 @@ public class BDFConverter
     private void FillBitmapToBackgroundColor()
     {
         for (int i = 0; i < bitmap.Width; i++)
-        {
             for (int j = 0; j < bitmap.Height; j++)
-            {
                 bitmap.SetPixel(i, j, TryGetColorsFromStrings(config.bitmapBackgroundColor, Color.Black));
-            }
-        }
     }
 
     void StoreColor(string[] colorArray, byte colorIndex, int x, int y, ref List<byte> tileData)
@@ -184,9 +169,7 @@ public class BDFConverter
         Color color;
 
         if (colorComponents == null || colorComponents.Length != 3)
-        {
             return fallbackColor;
-        }
 
         try
         {

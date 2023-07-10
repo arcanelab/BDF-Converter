@@ -10,39 +10,50 @@ class Application
             return;
         }
 
-        PrintCommandLineArgumentsIfNeeded(args);
+        Config config = SetupConfiguration(args);
+        if (config == null)
+            return;
 
+        BDFConverter converter = new BDFConverter(config);
+
+        string[] lines = ReadLines(config.filePath);
+        converter.ProcessLines(lines, config.filePath);
+    }
+
+    static Config SetupConfiguration(string[] args)
+    {
+        if (args.Length != 1 && args.Length != 3)
+        {
+            PrintCommandLineHelp(args);
+            return null;
+        }
+
+        // Loads the config file if it exists.
+        // Creates a default one if it doesn't.
         Config config = Config.GetConfigFile();
 
+        // Set file path.
         config.filePath = args[0];
-        string[] lines = ReadLines(config.filePath);
 
-        BDFConverter converter;
-
+        // Set character size overrides if provided.
         if (args.Length == 3)
         {
             config.characterWidth = byte.Parse(args[1]);
             config.characterHeight = byte.Parse(args[2]);
         }
 
-        converter = new BDFConverter(config);
-        converter.ProcessLines(lines, config.filePath);
+        return config;
     }
 
-    static void PrintCommandLineArgumentsIfNeeded(string[] args)
+    static void PrintCommandLineHelp(string[] args)
     {
         var executableName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-
-        if (args.Length != 1 && args.Length != 3)
-        {
-            Console.WriteLine($"{executableName} <bdf-font-file> [width-override] [height-override]");
-            Console.WriteLine("Example: " + executableName + " font.bdf 8 8");
-            Console.WriteLine("\nOutput:");
-            Console.WriteLine(" - the font atlas in png format");
-            Console.WriteLine(" - the tile data in binary format");
-            Console.WriteLine("\nOnly fixed-width fonts are supported.");
-            Environment.Exit(0);
-        }
+        Console.WriteLine($"{executableName} <bdf-font-file> [width-override] [height-override]");
+        Console.WriteLine("Example: " + executableName + " font.bdf 8 8");
+        Console.WriteLine("\nOutput:");
+        Console.WriteLine(" - the font atlas in png format");
+        Console.WriteLine(" - the tile data in binary format");
+        Console.WriteLine("\nOnly fixed-width fonts are supported.");
     }
 
     static string[] ReadLines(string filename)
